@@ -32,6 +32,11 @@ def get_cpd_graph(build):
 def get_pylint_graph(build):
 	return "%s/%s/violations/graph?type=pylint" % (base_url, build)
 
+def get_violation_results(violation_type, page):
+	violation = page.find('a', {'href':'#' + violation_type})
+	violation_count = violation.parent.nextSibling
+	return (violation_count.text, violation_count.nextSibling.text)
+
 if __name__ == '__main__':
 	vector_build = 'Vector_Build'
 	vector_page = get_build_page(vector_build)
@@ -45,4 +50,8 @@ if __name__ == '__main__':
 	print get_violations_graph(vector_analysis_build)	
 	print get_cpd_graph(vector_analysis_build)	
 	print get_pylint_graph(vector_analysis_build)	
-	
+
+	vector_analysis_violations_page = get_build_page(vector_analysis_build + "/violations")
+	print "Pylint %s violations, %s files" % get_violation_results('pylint', vector_analysis_violations_page)
+	print "CPD %s violations, %s files" % get_violation_results('cpd', vector_analysis_violations_page)
+
