@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jenkins Dashboard</title>
+    <style type="text/css">
+        body {
+           margin:auto;
+           text-align:center;
+        }
+        h1 {
+           font-size:5em;
+           width:100%;
+        }
+        h2 {
+           margin:0;padding:0;
+           text-align:center;
+        }
+        .section {
+           float:left;
+           border-radius: 15px;
+           margin:10px;
+           padding:10px;
+           color:#000;
+           background:#fff;
+        }
+        .column {
+           text-align:center;
+           float:left;
+        }
+        #content {
+           margin:auto;
+           text-align:center;
+        }
+        .Success {
+            background-color:#0c0;
+            color:#fff;
+        }
+        .Failed {
+            background-color:#c00;
+            color:#fff;
+        }
+        .Unstable {
+            background-color:#fd0;
+            color:#000;
+        }
+        .InProgress {
+            background-color:#fff;
+            color:#000;
+        }
+        .Aborted {
+            background-color:#ccc;
+            color:#fff;
+        }
+    </style>
+</head>
+<body class="{{ status }}">
+    <h1>{{ build }}</h1>
+
+    <div id="content">
+
+        <div class="column">
+            <div class="section">
+                <h2>{{ test_section_title }}</h2>
+                <img src="{{ test_section_content }}"  />
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="section">
+                <h2>{{ violations_section_title }}</h2>
+                <img src="{{ violations_section_content }}"  />
+            </div>
+        </div>
+
+        <div style="clear:both;" />
+
+        <div class="column">
+            <div class="section">
+                <h2>{{ coverage_section_title }}</h2>
+                <img src="{{ coverage_section_content }}"  />
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="section">
+                <h2>{{ pylint_section_title }}</h2>
+                <img src="{{ pylint_section_content }}"  />
+            </div>
+        </div>
+
+        <div style="clear:both;" />
+
+        <div class="column">
+            <div class="section">
+                <h2>{{ cpd_section_title }}</h2>
+                <img src="{{ cpd_section_content }}"  />
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="section">
+                <h2>{{ pep8_section_title }}</h2>
+                <img src="{{ pep8_section_content }}"  />
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript">
+    (function(){
+        var scroll_to = 0;
+        var direction = 2;
+        setInterval(function(){
+            window.scroll(0, scroll_to);
+            scroll_to += direction;
+
+            if (scroll_to + document.body.clientHeight >= document.body.scrollHeight){
+                direction = -2;
+            }
+            else if (scroll_to <= 0){
+                direction = 2;
+            }
+
+            console.log(direction);
+            console.log(scroll_to);
+            console.log(document.body.clientHeight);
+            console.log(document.body.scrollHeight);
+
+        }, 100);
+
+        setTimeout(function(){
+            document.location = document.location;
+        }, 1000 * 60);
+    }());
+    </script>
+
+</body>
+</html>
