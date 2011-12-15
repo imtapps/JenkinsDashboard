@@ -15,6 +15,7 @@ builds = [
     'django-wizard',
     'django-pretty-times',
     'django-response-helpers',
+    'django-attachment',
 ]
 
 class Index(TemplateView):
