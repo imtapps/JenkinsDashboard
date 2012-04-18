@@ -17,7 +17,7 @@ builds = [
     'django-wizard',
     'django-pretty-times',
     'django-response-helpers',
-    'django-attachment',
+    'django-attachments',
 ]
 
 class Status(TemplateView):
