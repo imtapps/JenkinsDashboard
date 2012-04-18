@@ -3,8 +3,10 @@ from django.views.generic import TemplateView
 from BeautifulSoup import BeautifulSoup
 import re
 import urllib
+import time
 
-base_url = "http://ci.apps-system.com/job"
+ci_url = "http://ci.apps-system.com/"
+base_url = "%s/job" % ci_url
 
 builds = [
     'django-admin-ext',
@@ -17,6 +19,31 @@ builds = [
     'django-response-helpers',
     'django-attachment',
 ]
+
+class Status(TemplateView):
+    template_name = 'dashboard/status.html'
+
+    def get_context_data(self, **kwargs):
+        f = urllib.urlopen(ci_url)
+        data = f.read()
+        f.close()
+        page = BeautifulSoup(data)
+
+        status_table = page.findAll(**{'id': 'projectstatus'})[0]
+        statuses = []
+        for cell in status_table.findAll('tr')[1:]:
+            status_icon = cell.find('img', **{'class': 'icon32x32'})
+            if status_icon:
+                statuses.append(dict(status_icon.attrs)['alt'])
+
+        ss = [s not in ('Success', 'Disabled', 'In progress') for s in statuses]
+        fail = any(ss)
+        if fail:
+            for i in range(20):
+                print "\a"
+                time.sleep(.2)
+
+        return {'success': not fail}
 
 class Index(TemplateView):
     template_name = 'dashboard/index.html'

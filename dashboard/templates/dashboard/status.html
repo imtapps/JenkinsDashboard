@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <title>{% if success %}YAY!{% else %}BOO!{% endif %}</title>
+    <style type="text/css">
+        body {
+            margin:auto;
+            text-align:center;
+            {% if success %}
+            background: #0F0;
+            {% else %}
+            background: #F00;
+            {% endif %}
+        }
+        #content {
+            border-radius:20px;
+            position:absolute;
+            top:10%;
+            left:30%;
+            {% if success %}
+            background: #fff url('/static/dashboard/up.png') no-repeat center;
+            {% else %}
+            background:#fff url('/static/dashboard/down.png') no-repeat center;
+            {% endif %}
+            width:40%;
+            height:80%;
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">&nbsp;</div>
+    <script type="text/javascript">
+        setTimeout(function(){
+            document.location = document.location;
+        }, 1000 * 60);
+    </script>
+</body>
+</html>
