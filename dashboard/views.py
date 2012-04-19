@@ -36,7 +36,7 @@ class Status(TemplateView):
             if status_icon:
                 statuses.append(dict(status_icon.attrs)['alt'])
 
-        ss = [s not in ('Success', 'Disabled', 'In progress') for s in statuses]
+        ss = [s not in ('Success', 'Disabled', 'In progress', 'Pending') for s in statuses]
         fail = any(ss)
         if fail:
             for i in range(20):
