@@ -23,19 +23,25 @@ builds = [
 class Stats(TemplateView):
     template_name = 'dashboard/stats.html'
 
-
-    def get_context_data(self, **kwargs):
+    def get_projects_table(self):
         f = urllib.urlopen(ci_url)
         data = f.read()
         f.close()
         page = BeautifulSoup(data)
-
         project_table = page.findAll(**{'id': 'projectstatus'})[0]
 
+        return project_table.findAll('tr')[1:]
+
+    def get_projects(self, projects_table):
         projects = []
-        for project in project_table.findAll('tr')[1:]:
+        for project in projects_table:
             if dict(project.attrs).get('id', "").startswith('job_'):
                 projects.append(project.find(**{'class': 'model-link'}).text)
+
+        return projects
+
+    def get_coverage_stats(self, projects_table):
+        projects = self.get_projects(projects_table)
 
         coverage_data = {}
         for project in projects:
@@ -50,6 +56,7 @@ class Stats(TemplateView):
         all_covered = 0.0
         all_total = 0.0
         coverage = []
+
         for project, (covered, total) in coverage_data.items():
             coverage.append((project, int((float(covered) / float(total)) * 100)))
             all_covered += int(covered)
@@ -61,6 +68,40 @@ class Stats(TemplateView):
             'total_coverage': int((all_covered / all_total) * 100),
             'project_coverage': coverage,
         }
+
+    def get_test_stats(self, projects_table):
+        test_data = {}
+        for p in projects_table:
+            if dict(p.attrs).get('id', "").startswith('job_'):
+                project = p.find(**{'class': 'model-link'}).text
+                health_report = p.findAll(**{'class': 'healthReportDetails'})
+                if health_report:
+                    for row in health_report[0].findAll('tr'):
+                        if row.text.startswith('Test Result:'):
+                            test_message = row.findAll('td')[-2].text
+                            match = re.search('total of ([\d,]+) tests', test_message)
+                            test_data[project] = re.sub(',', '', match.group(1))
+
+        return {
+            'total_tests': sum(int(v) for v in test_data.values()),
+            'project_tests': test_data,
+        }
+
+    def get_context_data(self, **kwargs):
+        projects_table = self.get_projects_table()
+        combined_data = dict(
+            coverage=self.get_coverage_stats(projects_table),
+            test=self.get_test_stats(projects_table),
+            projects={},
+        )
+
+        for project, coverage_data in combined_data['coverage']['project_coverage']:
+            combined_data['projects'][project] = {
+                'coverage': coverage_data,
+                'test': combined_data['test']['project_tests'][project]
+            }
+
+        return combined_data
 
 class Status(TemplateView):
     template_name = 'dashboard/status.html'

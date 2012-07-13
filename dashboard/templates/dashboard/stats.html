@@ -1,9 +1,18 @@
 {% load humanize %}
-<div style="font-size:3em;"><strong>{{ total_coverage }}%</strong> Coverage overall</div>
-<div>{{ total_lines|intcomma }} Total lines of Python</div>
-<div>{{ total_lines_covered|intcomma }} Total lines of tested Python</div>
+<div style="font-size:3em;"><strong>{{ coverage.total_coverage }}%</strong> Coverage overall</div>
+<div>{{ coverage.total_lines|intcomma }} Total lines of Python</div>
+<div>{{ coverage.total_lines_covered|intcomma }} Total lines of tested Python</div>
+<div>{{ test.total_tests|intcomma }} Total tests</div>
+
 <ul>
-{% for project, coverage in project_coverage %}
-    <li><strong><a href="http://ci.apps-system.com/job/{{ project }}/cobertura/">{{ project }}</a></strong> is {{ coverage }}% covered</li>
+    {% for project, data in projects.items %}
+    <li><strong><a href="http://ci.apps-system.com/job/{{ project }}/cobertura/">{{ project }}</a></strong> is <strong>{{ data.coverage }}% covered</strong> with <strong>{{ data.test|intcomma }} tests</strong></li>
+    {% endfor %}
+</ul>
+<!--
+<ul>
+{% for project, project_coverage in coverage.project_coverage %}
+    <li><strong><a href="http://ci.apps-system.com/job/{{ project }}/cobertura/">{{ project }}</a></strong> is {{ project_coverage }}% covered</li>
 {% endfor %}
 </ul>
+-->
