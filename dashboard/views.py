@@ -20,6 +20,48 @@ builds = [
     'django-attachments',
 ]
 
+class Stats(TemplateView):
+    template_name = 'dashboard/stats.html'
+
+
+    def get_context_data(self, **kwargs):
+        f = urllib.urlopen(ci_url)
+        data = f.read()
+        f.close()
+        page = BeautifulSoup(data)
+
+        project_table = page.findAll(**{'id': 'projectstatus'})[0]
+
+        projects = []
+        for project in project_table.findAll('tr')[1:]:
+            if dict(project.attrs).get('id', "").startswith('job_'):
+                projects.append(project.find(**{'class': 'model-link'}).text)
+
+        coverage_data = {}
+        for project in projects:
+            f = urllib.urlopen("{}/job/{}/cobertura/".format(ci_url, project))
+            data = f.read()
+            if data:
+                page = BeautifulSoup(data)
+                greenbar = page.findAll(**{'class': 'greenbar'})
+                if greenbar:
+                    coverage_data[project] = greenbar[3].find(**{'class': 'text'}).text.split('/')
+
+        all_covered = 0.0
+        all_total = 0.0
+        coverage = []
+        for project, (covered, total) in coverage_data.items():
+            coverage.append((project, int((float(covered) / float(total)) * 100)))
+            all_covered += int(covered)
+            all_total += int(total)
+
+        return {
+            'total_lines': int(all_total),
+            'total_lines_covered': int(all_covered),
+            'total_coverage': int((all_covered / all_total) * 100),
+            'project_coverage': coverage,
+        }
+
 class Status(TemplateView):
     template_name = 'dashboard/status.html'
 

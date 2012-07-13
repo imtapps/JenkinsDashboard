@@ -1,0 +1,9 @@
+{% load humanize %}
+<div style="font-size:3em;"><strong>{{ total_coverage }}%</strong> Coverage overall</div>
+<div>{{ total_lines|intcomma }} Total lines of Python</div>
+<div>{{ total_lines_covered|intcomma }} Total lines of tested Python</div>
+<ul>
+{% for project, coverage in project_coverage %}
+    <li><strong><a href="http://ci.apps-system.com/job/{{ project }}/cobertura/">{{ project }}</a></strong> is {{ coverage }}% covered</li>
+{% endfor %}
+</ul>
