@@ -1,9 +1,9 @@
-
 from django.views.generic import TemplateView
 from BeautifulSoup import BeautifulSoup
 import re
-import urllib
+import urllib, urllib2
 import time
+import os
 
 ci_url = "http://ci.apps-system.com/"
 base_url = "%s/job" % ci_url
@@ -24,7 +24,9 @@ class Stats(TemplateView):
     template_name = 'dashboard/stats.html'
 
     def get_projects_table(self):
-        f = urllib.urlopen(ci_url)
+        request = urllib2.Request(ci_url)
+        request.add_header("Authorization", "Basic %s" % os.environ['CIAUTH'])
+        f = urllib2.urlopen(request)
         data = f.read()
         f.close()
         page = BeautifulSoup(data)
@@ -107,7 +109,9 @@ class Status(TemplateView):
     template_name = 'dashboard/status.html'
 
     def get_context_data(self, **kwargs):
-        f = urllib.urlopen(ci_url)
+        request = urllib2.Request(ci_url)
+        request.add_header("Authorization", "Basic %s" % os.environ['CIAUTH'])
+        f = urllib2.urlopen(request)
         data = f.read()
         f.close()
         page = BeautifulSoup(data)
